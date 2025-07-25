@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace PhotoSquisher.Models
 {
@@ -10,7 +11,6 @@ namespace PhotoSquisher.Models
     {
         public int PhotoId { get; set; }
         public string Path { get; set; }
-        //unsure what this would do
-        //public List<Post> Posts { get; } = new();
+        //public List<Post> Posts { get; } = new(); //This would add the photoid foreign key to the Posts table? or something similar anything
     }
 }

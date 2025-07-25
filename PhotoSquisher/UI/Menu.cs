@@ -2,6 +2,7 @@
 //TODO
 //Create base class interface for menu, to handle numbered and yes/no menus
 //Update Action type to be able to handle methods with a return type (even if we just bin the return value)
+//Add return to main menu option, and while loop to stay on the same menu until explicitly returned
 
 using System;
 using System.Collections.Generic;

@@ -12,10 +12,8 @@ namespace PhotoSquisher.Models
 {
     internal class PhotoSquisherDbContext : DbContext
     {
-        // lovingly stolen from ms's tutorial https://learn.microsoft.com/en-us/ef/core/get-started/overview/first-app?tabs=visual-studio
+        // lovingly mostly stolen from ms's tutorial https://learn.microsoft.com/en-us/ef/core/get-started/overview/first-app?tabs=visual-studio
 
-        //TODO: These paths should be set with some other method by the user, and persist in a config file
-        private string databaseDirectory = "path";
         private string databaseName = "PhotoSquisher.db";
 
         //For each table in db, add DbSet<TableClass> TableProperty {get; set;}
@@ -29,6 +27,9 @@ namespace PhotoSquisher.Models
 
         public PhotoSquisherDbContext()
         {
+            //QUESTION is local app data the best place to chuck the DB?
+            // The following configures EF to create a Sqlite database file in the
+            // special "local" folder for your platform
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
             DbPath = System.IO.Path.Join(path, databaseName);
@@ -36,12 +37,19 @@ namespace PhotoSquisher.Models
             Console.WriteLine($"DbPath is {DbPath}");
         }
 
-        // The following configures EF to create a Sqlite database file in the
-        // special "local" folder for your platform.
+.
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite($"Data Source={DbPath}");
 
-        //TODO DONE Create database within the app 
-
+        //https://learn.microsoft.com/en-us/ef/core/modeling/indexes?tabs=fluent-api
+        //https://learn.microsoft.com/en-us/ef/ef6/modeling/code-first/conventions/custom
+        //Override the default schema EFCore guesses at
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            //unique constraint on photo path
+            modelBuilder.Entity<Photo>()
+                .HasIndex(p => p.Path)
+                .IsUnique();
+        }
     }
 }

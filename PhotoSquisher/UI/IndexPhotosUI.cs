@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using PhotoSquisher.Services;
+using PhotoSquisher.Tools;
 
 namespace PhotoSquisher.UI
 {
@@ -13,25 +14,14 @@ namespace PhotoSquisher.UI
                 { "Scan for new photos",ScanPhotosUI},
                 { "Re-index all photos",Menu.PlaceholderAction},
                 { "A secret third option",Menu.FireworksPlaceholderAction},
-                { "CRUD Test", IndexPhotos.CRUDtest },
-                { "Rebuild Database", IndexPhotos.RebuildDatabase},
+                { "CRUD Test", Misc.CRUDtest },
+                { "Rebuild Database", maintainDb.RebuildDatabase},
             });
         }
 
-        public static void DeleteDatabaseUI()
+        public static void ScanPhotosUI()//menu class can't handle methods with return types for now, although maybe that's a good thing?
         {
-            //todo This should be a y/n menu class
-            Console.WriteLine("Delete everything? I wouldn't if i were you...       y / n");
-            char userInput = Console.ReadKey().KeyChar;Console.WriteLine(Environment.NewLine);
-            if (userInput == 'y')
-            {
-                IndexPhotos.DeleteDatabaseAsync();
-            }
-            else { Console.WriteLine("invalid"); }
-        }
-        public static void ScanPhotosUI()//menu can't handle methods with return types for now, maybe that's a good thing though
-        {
-            Console.WriteLine(IndexPhotos.ScanPhotos()); 
+            Console.WriteLine($"{IndexPhotos.ScanPhotos().Result} database operations completed."); 
         }
     }
 }
