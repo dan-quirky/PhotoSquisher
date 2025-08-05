@@ -11,6 +11,7 @@ namespace PhotoSquisher.Models
     {
         public int PhotoId { get; set; }
         public string Path { get; set; }
-        //public List<Post> Posts { get; } = new(); //This would add the photoid foreign key to the Posts table? or something similar anything
+        public bool Processed_Flag { get; set; } 
+        public string? Processed_Path { get; set; }
     }
 }

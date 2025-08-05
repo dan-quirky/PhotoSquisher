@@ -29,7 +29,6 @@ namespace PhotoSquisher.Services
         }
         public async static void RebuildDatabase()
         {
-            //BUG have observed this not deleting the db without complainign about it, look into it 
             //Todo This should only continue if the previous step didn't fail (i.e. delete fails if db is open in viewer). Sounds like a Task thing.
             try
             {
@@ -42,6 +41,14 @@ namespace PhotoSquisher.Services
                     + "Creating new db");
                 if (await CreateDatabaseAsync() != true) throw new InvalidOperationException("Failed to create database");
                 Console.WriteLine("Done.");
+                Console.WriteLine("Resetting to default configuration");
+                using PhotoSquisherDbContext db = new();
+                db.AddRange([
+                    new Configuration{Config = "libraryPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\SamplePhotoLibraryHD" },
+                    //new Configuration{Config = "outputPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\" },
+                    new Configuration("outputPath", @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\" ),
+                    ]);
+                await db.SaveChangesAsync();
             }
             catch (InvalidOperationException ex)
             {

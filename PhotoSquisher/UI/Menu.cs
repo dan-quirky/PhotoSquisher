@@ -1,70 +1,52 @@
-﻿//utility class for dynamic menus
-//TODO
-//Create base class interface for menu, to handle numbered and yes/no menus
-//Update Action type to be able to handle methods with a return type (even if we just bin the return value)
-//Add return to main menu option, and while loop to stay on the same menu until explicitly returned
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Linq.Expressions;
-//using System.Text;
-//using System.Threading.Tasks;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace PhotoSquisher.UI
 {
     internal class Menu
     {
+        protected (string Message, Action Method) MenuItem { get; set; } //Action is class for a method with no params/returns - look up Generic Delegates
+        protected bool noValidSelection = true;
+        protected char userInput;
+        public Menu() :  this("Press any key to continue...", defaultAction) { }//default arguments are a bit funny with methods. Inherit full constructor instead to set default values 
 
-        internal Dictionary<string, Action> MenuItems { get;  set; } //get set unnecessary if internal? probably
-        internal bool noValidSelection = true;
-        public Menu(Dictionary<string, Action> menuItems) //Action is datatype (kinda) for a method with no params/returns - look up Generic Delegates
+        public Menu(string message, Action method)
         {
-            //CONSTRUCTOR
-            //  Sets array of menu items e.g. [Scan, Compress, Rebuild Index, ...]
-            //TODO update to an object of Menu Item / Method pairs
-            MenuItems = menuItems;
-            MenuFlow();
+            MenuItem = (message, method);
+            //MenuFlow();  
+            /*So can't put menuflow here or it breaks derived classes. 
+             * Turns out polymorphism doesn't work in a constructor, so the base printMenuItems etc are secretly called instead of the overridden ones
+             * kick off menuflow manually when you create the class
+             */
         }
-        public void MenuFlow()
+        public void Flow()
         {
-            //Print menu items
-            //get user selection
-            //if valid, go to linked method
-            //if invalid, print invalid and go back to menu
-            do 
+            do
             {
                 PrintMenuItems();
-                string userSelection = Console.ReadLine();
-                SelectMenuItem(userSelection);
-            } while (noValidSelection);
-        }
-        public void PrintMenuItems()
-        {
-            ////Get a list 
-            ////Prints numbered list of options
-            var enumeratedMenuItems = MenuItems.Select((val, i) => new {V = val,  N = i+1});
-            foreach (var menuItem in enumeratedMenuItems)
-            {
-                Console.WriteLine($"{menuItem.N} - {menuItem.V.Key}");
+                GetUserSelection();
+                SelectMenuItem();
             }
+            while (noValidSelection);
         }
-        public void SelectMenuItem(string userInput)
+        protected virtual void PrintMenuItems()
         {
-            //Take user input
-            //convert to int, -1 to get index
-            //invoke method at that index of menuItems
-            try
-            {
-                int i = Int32.Parse(userInput) - 1;
-                Console.WriteLine($"{ MenuItems.ElementAt(i).Key} selected");
-                MenuItems.ElementAt(i).Value();//Call the method stored in Value of MenuItems at that index
-                noValidSelection = false; //will this ever be hit if the method is called above?
-            }
-            //FIX this isn't being hit if input is invalid, just prints the menu again
-            catch { Console.WriteLine("Invalid"); } 
-
+            Console.WriteLine(MenuItem.Message);
         }
+        protected virtual void GetUserSelection()
+        {
+            userInput = Console.ReadKey().KeyChar;
+            Console.WriteLine();
+        }
+        protected virtual void SelectMenuItem()
+        {
+            MenuItem.Method();
+            noValidSelection = false;
+        }
+        protected static void defaultAction() {  }
 
         public static void PlaceholderAction()
         {
@@ -106,7 +88,6 @@ namespace PhotoSquisher.UI
                 );
 
         }
-
 
     }
 }

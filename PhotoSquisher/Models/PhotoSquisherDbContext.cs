@@ -12,12 +12,14 @@ namespace PhotoSquisher.Models
 {
     internal class PhotoSquisherDbContext : DbContext
     {
-        // lovingly mostly stolen from ms's tutorial https://learn.microsoft.com/en-us/ef/core/get-started/overview/first-app?tabs=visual-studio
+        // bones stolen from ms's tutorial https://learn.microsoft.com/en-us/ef/core/get-started/overview/first-app?tabs=visual-studio
 
         private string databaseName = "PhotoSquisher.db";
 
         //For each table in db, add DbSet<TableClass> TableProperty {get; set;}
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<Configuration> Configuration { get; set; }
+        
         /*TABLES TO IMPLEMENT
          * Compress Queue
          * Secrets
@@ -37,7 +39,7 @@ namespace PhotoSquisher.Models
             Console.WriteLine($"DbPath is {DbPath}");
         }
 
-.
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
             => options.UseSqlite($"Data Source={DbPath}");
 
@@ -50,6 +52,10 @@ namespace PhotoSquisher.Models
             modelBuilder.Entity<Photo>()
                 .HasIndex(p => p.Path)
                 .IsUnique();
+            //unique constraint on Configuration config
+            modelBuilder.Entity<Configuration>()
+                .HasKey(t => t.Config);
+                
         }
     }
 }

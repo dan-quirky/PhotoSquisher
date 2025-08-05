@@ -7,6 +7,7 @@
 
 using PhotoSquisher.Services;
 using PhotoSquisher.UI;
+using PhotoSquisher.Tools;
 
 
 bool exit = false;
@@ -15,30 +16,17 @@ do
 {
 
     Console.WriteLine("Main Menu:");
-    Menu m = new Menu(new Dictionary<string, Action>
+    new numberedMenu_Dictionary(new Dictionary<string, Action>
     {
         {"Info",Info.GetInfo},
         {"Scan Photos",IndexPhotosUI.Run },
-        {"Compress Photos", Menu.PlaceholderAction}
+        {"Compress Photos", numberedMenu_Dictionary.PlaceholderAction},
+        {"Menu Test",  MenuTest.Run},
+        {"Compress Test", ProcessPhoto.readWriteImageTest },
+         {"Queue Test", ProcessQueue.Run },
     });
 
-    //old menu
-    /*
-    Console.WriteLine
-        ("1 - Info" + Environment.NewLine +
-        "2 - Scan & Queue" + Environment.NewLine +
-        "3 - Compress Queue" + Environment.NewLine +
-        "");
-    string userInput = Console.ReadLine(); Console.WriteLine(Environment.NewLine);
 
-    switch (userInput)
-    {
-        case "1":
-            Info.GetInfo(); break;
-        case "2":
-            IndexPhotosUI.Run(); break;
-    */
 
-    
 } while (exit != true);
 
