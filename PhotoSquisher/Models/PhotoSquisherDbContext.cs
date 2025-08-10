@@ -35,8 +35,8 @@ namespace PhotoSquisher.Models
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
             DbPath = System.IO.Path.Join(path, databaseName);
-            Console.WriteLine($"PhotoSquisherDbContext connection initialised");
-            Console.WriteLine($"DbPath is {DbPath}");
+            //Console.WriteLine($"PhotoSquisherDbContext connection initialised");
+            //Console.WriteLine($"DbPath is {DbPath}");
         }
 
 

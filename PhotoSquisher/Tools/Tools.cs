@@ -34,10 +34,11 @@ namespace PhotoSquisher.Tools
         public static void printCaughtException(Exception ex)
         {
             Console.WriteLine($"{Environment.NewLine}Something went wrong: {ex.GetType()} {ex.Message}");
-            new YnMenu(
-                "See full exception detail?", 
+            MenuItem mi = new(
+                "See full exception detail?",
                 () => Console.WriteLine(ex.InnerException + Environment.NewLine + ex.StackTrace)
-                ).Flow();
+                );
+            new YnMenu(mi).Flow();
         }
 
     }

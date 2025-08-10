@@ -8,16 +8,17 @@ namespace PhotoSquisher.UI
 {
     internal class Menu
     {
-        protected (string Message, Action Method) MenuItem { get; set; } //Action is class for a method with no params/returns - look up Generic Delegates
+        protected MenuItem menuItem { get; set; } //Action is class for a method with no params/returns - look up Generic Delegates
         protected bool noValidSelection = true;
         protected char userInput;
-        public Menu() :  this("Press any key to continue...", defaultAction) { }//default arguments are a bit funny with methods. Inherit full constructor instead to set default values 
+        public Menu() :  this( new("Press any key to continue...", defaultAction) ) { }//default arguments are a bit funny with methods. Inherit full constructor instead to set default values 
 
-        public Menu(string message, Action method)
+        public Menu(MenuItem menuItem)
         {
-            MenuItem = (message, method);
+            this.menuItem = menuItem;
             //MenuFlow();  
-            /*So can't put menuflow here or it breaks derived classes. 
+            /*
+             * So can't put menuflow here or it breaks derived classes. 
              * Turns out polymorphism doesn't work in a constructor, so the base printMenuItems etc are secretly called instead of the overridden ones
              * kick off menuflow manually when you create the class
              */
@@ -34,7 +35,7 @@ namespace PhotoSquisher.UI
         }
         protected virtual void PrintMenuItems()
         {
-            Console.WriteLine(MenuItem.Message);
+            Console.WriteLine(menuItem.Message);
         }
         protected virtual void GetUserSelection()
         {
@@ -43,10 +44,10 @@ namespace PhotoSquisher.UI
         }
         protected virtual void SelectMenuItem()
         {
-            MenuItem.Method();
+            menuItem.Invoke();
             noValidSelection = false;
         }
-        protected static void defaultAction() {  }
+        protected static void defaultAction() {}
 
         public static void PlaceholderAction()
         {

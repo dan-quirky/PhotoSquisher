@@ -15,7 +15,6 @@ namespace PhotoSquisher.Services
     //Could/should also be async/multithreaded
     internal class ProcessQueue
     {
-        //static string outputPathBase = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\"; //TODO get this from the db
         static string outputPathBase { get; set; }
         
             

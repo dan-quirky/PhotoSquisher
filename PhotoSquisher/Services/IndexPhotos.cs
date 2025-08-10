@@ -41,10 +41,10 @@ namespace PhotoSquisher.Services
                  * Filesystem watching (won't do this for while, if at all)
                  *      
                  */
-                    using PhotoSquisherDbContext db = new();
-                string photoLibraryDirectory = (from c in db.Configuration
-                                                    where c.Config == "libraryPath"
-                                                    select c.Value)
+                using PhotoSquisherDbContext db = new();
+                string? photoLibraryDirectory = (from c in db.Configuration 
+                                                where c.Config == "libraryPath"
+                                                select c.Value)
                                                 .SingleOrDefault();
                     PsDebug.printVariable(photoLibraryDirectory);
             

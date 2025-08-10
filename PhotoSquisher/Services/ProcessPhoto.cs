@@ -37,7 +37,7 @@ namespace PhotoSquisher.Services
 
 
         //todo rewrite to return a promise (task?) 
-        public async static Task<bool> Compress(string filePath, string outputPath) 
+        public  async static Task<bool> Compress(string filePath, string outputPath) 
         {
             bool taskResult = false; 
             try
@@ -64,7 +64,7 @@ namespace PhotoSquisher.Services
 
                                                                            
                 try{ Directory.CreateDirectory( Path.GetDirectoryName(outputPath) ); }
-                catch (IOException ex) { }; //do nothing if dir already exists 
+                catch (IOException) { }; //do nothing if dir already exists 
                 Console.WriteLine($"Writing to {outputPath}");   
                 photo.Write(outputPath, MagickFormat.Jpg);
                 Console.WriteLine($"Done");

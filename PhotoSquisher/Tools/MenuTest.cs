@@ -22,7 +22,8 @@ namespace PhotoSquisher.Tools
         internal static void testMenu2Args()
         {
             Console.WriteLine("Menu with custom message and action");
-            new Menu("Custom Test message. Any key to continue.", Menu.PlaceholderAction).Flow();
+            MenuItem mi = new("Custom Test message. Any key to continue.", Menu.PlaceholderAction);
+            new Menu(mi).Flow();
         }
         internal static void testNumberedMenu_Dictionary()
         {
@@ -47,7 +48,8 @@ namespace PhotoSquisher.Tools
         internal static void testYnMenu()
         {
             Console.WriteLine("y/n menu, enter y Y n N. Loops on invalid selections");
-            new YnMenu("Are you sure you want to do this?", ()=>Console.WriteLine("You've only gone and done it...")).Flow();            
+            MenuItem mi = new("Are you sure you want to do this?", () => Console.WriteLine("You've only gone and done it..."));
+            new YnMenu(mi).Flow();            
         }
     }
 }

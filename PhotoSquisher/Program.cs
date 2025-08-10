@@ -1,8 +1,4 @@
-﻿//default namespace is PhotoSquisher, default class is Program, don't need to explcitly call main
-
-//TODO
-//[Done, implemented Menu class There's probably a better (dynamic) way to do menus but fine for right now
-//Use menu class for main menu too
+﻿//TODO
 
 
 using PhotoSquisher.Services;
@@ -16,7 +12,20 @@ do
 {
 
     Console.WriteLine("Main Menu:");
-    new numberedMenu_Dictionary(new Dictionary<string, Action>
+    new NumberedMenu([
+        new("Info",Info.GetInfo),
+        new("Scan Photos",IndexPhotosUI.Run),
+        new("Settings",SettingsUI.Run),
+        new("Exit",() => exit = true),
+        new("test",MenuTest.Run),
+    ]).Flow();
+
+/*old menu
+    do
+    {
+
+        Console.WriteLine("Main Menu:");
+        new numberedMenu_Dictionary(new Dictionary<string, Action>
     {
         {"Info",Info.GetInfo},
         {"Scan Photos",IndexPhotosUI.Run },
@@ -25,8 +34,10 @@ do
         {"Compress Test", ProcessPhoto.readWriteImageTest },
          {"Queue Test", ProcessQueue.Run },
     });
+*/
 
 
+    } while (exit != true);
 
-} while (exit != true);
+
 

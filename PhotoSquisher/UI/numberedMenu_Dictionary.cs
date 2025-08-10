@@ -15,17 +15,16 @@ namespace PhotoSquisher.UI
 {
     internal class NumberedMenu : Menu
     {
-
-        internal MenuItem[] MenuItems { get; set; } //array of menu items
+        internal MenuItem[] menuItems { get; set; } //array of menu items
         public NumberedMenu( MenuItem[] menuItems )
         {
             //CONSTRUCTOR
-            MenuItems = menuItems;
+            this.menuItems = menuItems;
         }
         protected override void PrintMenuItems()
         {
             ////Prints numbered list of options
-            var enumeratedMenuItems = MenuItems.Select((v, i) => ( v, i + 1 ) );
+            var enumeratedMenuItems = menuItems.Select((v, i) => ( v, i + 1 ) );
             foreach ( ( MenuItem MenuItem, int position) in enumeratedMenuItems )
             {
                 Console.WriteLine($"{position} - {MenuItem.Message}");
@@ -45,8 +44,8 @@ namespace PhotoSquisher.UI
 
                 Console.WriteLine($"user input: {userInput}");
                 int i = Int32.Parse(userInput.ToString()) - 1;
-                Console.WriteLine($"{MenuItems[i].Message} selected");
-                MenuItems[i].Method();//Call the method stored in Value of MenuItems at that index
+                Console.WriteLine($"{menuItems[i].Message} selected");
+                menuItems[i].Invoke();//Call the method stored in Value of MenuItems at that index
                 noValidSelection = false; //will this ever be hit if the method is called above?
             }
             catch { Console.WriteLine("Invalid selection"); }

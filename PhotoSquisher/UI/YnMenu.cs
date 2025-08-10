@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace PhotoSquisher.UI
 {
-    internal class YnMenu(string message, Action method) : Menu(message, method) //"Primary Constructor", fun
+    internal class YnMenu(MenuItem menuItem) : Menu(menuItem) //"Primary Constructor", looks fun
     {
+
         protected override void PrintMenuItems() 
         {
             base.PrintMenuItems();
