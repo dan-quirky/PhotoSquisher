@@ -48,7 +48,7 @@ namespace PhotoSquisher.UI
                 while (string.IsNullOrWhiteSpace(newVal));
                 MenuItem mi = new($"Are you sure you want to change {currentVal} to {newVal}?", () => s.Value = newVal);
                 new YnMenu(mi).Flow();
-                Console.WriteLine(s.Value);
+                Console.WriteLine(s.Value);            
         }
 
     }

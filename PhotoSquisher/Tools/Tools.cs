@@ -36,9 +36,11 @@ namespace PhotoSquisher.Tools
             Console.WriteLine($"{Environment.NewLine}Something went wrong: {ex.GetType()} {ex.Message}");
             MenuItem mi = new(
                 "See full exception detail?",
-                () => Console.WriteLine(ex.InnerException + Environment.NewLine + ex.StackTrace)
+                () => { Console.WriteLine(ex.InnerException + Environment.NewLine + ex.StackTrace); Console.ReadLine(); }
                 );
             new YnMenu(mi).Flow();
+            Console.ReadLine();
+
         }
 
     }

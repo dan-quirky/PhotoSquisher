@@ -47,6 +47,7 @@ namespace PhotoSquisher.Services
                     new Configuration{Config = "libraryPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\SamplePhotoLibraryHD" },
                     //new Configuration{Config = "outputPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\" },
                     new Configuration("outputPath", @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\" ),
+                    new IgnorePattern{ignorePattern = ".*" } 
                     ]);
                 await db.SaveChangesAsync();
             }

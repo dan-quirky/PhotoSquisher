@@ -1,58 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImageMagick;
-using ImageMagick.Formats;
-using PhotoSquisher.UI;
-using PhotoSquisher.Tools;
-using System.Diagnostics;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
-
-//using static System.Net.Mime.MediaTypeNames;
-//using Microsoft.Extensions.Options;
-//using static System.Net.Mime.MediaTypeNames;
-
+﻿// https://github.com/dlemstra/Magick.NET/tree/main/docs
 
 /*TODO
- * Read Image
- * Write Image
- *  Set compression settings
- *  Create dir if not exist
- *
- *Make compression async/multithreaded
- *  
- *         // https://github.com/dlemstra/Magick.NET/tree/main/docs
+ * [DONE (maybe), imagemagick is mutlithreaded by default] Make compression multithreaded
+ * Convert console printing to logging
+ * implement ResourceLimits 
+ * Test with 8/16 bit magick.net, are they any worse/faster
  */
+
+
+using ImageMagick;
 
 namespace PhotoSquisher.Services
 {
-    internal class ProcessPhoto
+    internal class SquishPhoto //Static class to split out the code that depends on imagemagick
     {
         static MagickImage? photo; //for threading, probably need seperate instances of this
         static MagickImageInfo? info;
 
 
-        //todo rewrite to return a promise (task?) 
         public  async static Task<bool> Compress(string filePath, string outputPath) 
         {
             bool taskResult = false; 
             try
             {
-                Console.WriteLine($"Compressing {filePath}");
+                //Console.WriteLine($"Compressing {filePath}");
                 OpenFile(filePath);
-                Debug.WriteLine("printing photo properties");
-                PsDebug.printProperties(info);
+                //Debug.WriteLine("printing photo properties");
+                //PsDebug.printProperties(info);
 
                 //Compression Settings
                 photo.ColorSpace = ColorSpace.RGB; //Convert to linear RGB for processing https://imagemagick.org/script/formats.php
-                double targetResolutionRatio = 12e6 / (info.Width * info.Height); //If image is greater than 12MP, resize to approx 12MP. large performance impact.
+                double targetResolutionRatio = 12e6 / (info.Width * info.Height); //If image is greater than 12MP, resize to approx 12MP. large-ish performance impact.
                 if (targetResolutionRatio < 1)
                 {
-                    Console.WriteLine("Reducing Resolution...");
+                    //Console.WriteLine("Reducing Resolution...");
                     double scalingFactor = Math.Sqrt(targetResolutionRatio);
                     uint newWidth = (uint)(info.Width * scalingFactor);
                     uint newHeight = (uint)(info.Height * scalingFactor);
@@ -65,10 +46,10 @@ namespace PhotoSquisher.Services
                                                                            
                 try{ Directory.CreateDirectory( Path.GetDirectoryName(outputPath) ); }
                 catch (IOException) { }; //do nothing if dir already exists 
-                Console.WriteLine($"Writing to {outputPath}");   
+                //Console.WriteLine($"Writing to {outputPath}");   
                 photo.Write(outputPath, MagickFormat.Jpg);
-                Console.WriteLine($"Done");
-                Console.WriteLine();
+                //Console.WriteLine($"Done");
+                //Console.WriteLine();
 
                 taskResult = true;
             }
@@ -76,11 +57,11 @@ namespace PhotoSquisher.Services
             {
                 Console.WriteLine($"Skipped {filePath}: {ex.Message} {ex.InnerException}");
             }
-            catch (Exception ex)//This generic catch won't be deactivated by the Debugging check. Should probably care about that.
-            {
-                PsDebug.printCaughtException(ex);
-                Console.WriteLine(ex.Message);
-            }
+            //catch (Exception ex)//This generic catch won't be deactivated by the Debugging check. Should probably care about that.
+            //{
+            //    PsDebug.printCaughtException(ex);
+            //    Console.WriteLine(ex.Message);
+            //}
             return taskResult;
 
         }
@@ -93,7 +74,7 @@ namespace PhotoSquisher.Services
             }
             catch (MagickException ex) when (ex.Message.Contains("Unsupported file format"))
             {
-                Console.WriteLine(Environment.NewLine + "Invalid file extension, reading file with fallback option");
+                //Console.WriteLine(Environment.NewLine + "Invalid file extension, reading file with fallback option");
                 FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
                 photo = new MagickImage(fs);
                 fs.Position = 0;
@@ -102,7 +83,7 @@ namespace PhotoSquisher.Services
 
         }
 
-        public static void readWriteImageTest()
+/*        public static void readWriteImageTest()
         {
             try
             {
@@ -174,5 +155,5 @@ namespace PhotoSquisher.Services
 
         }
 
-    }
+*/    }
 }

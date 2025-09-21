@@ -42,13 +42,13 @@ namespace PhotoSquisher.UI
             try
             {
 
-                Console.WriteLine($"user input: {userInput}");
+                //Console.WriteLine($"user input: {userInput}");
                 int i = Int32.Parse(userInput.ToString()) - 1;
                 Console.WriteLine($"{menuItems[i].Message} selected");
                 menuItems[i].Invoke();//Call the method stored in Value of MenuItems at that index
                 noValidSelection = false; //will this ever be hit if the method is called above?
             }
-            catch { Console.WriteLine("Invalid selection"); }
+            catch { Console.Clear(); Console.WriteLine($"Invalid selection: {userInput}"); }
 
         }
 
@@ -102,7 +102,10 @@ namespace PhotoSquisher.UI
                 MenuItems.ElementAt(i).Value();//Call the method stored in Value of MenuItems at that index
                 noValidSelection = false; //will this ever be hit if the method is called above?
             }
-            catch { Console.WriteLine("Invalid selection"); }
+            catch
+            {
+                Console.WriteLine("Invalid selection"); 
+            }
 
         }
         public static void PlaceholderAction()

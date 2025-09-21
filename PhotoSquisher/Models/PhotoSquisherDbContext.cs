@@ -19,6 +19,7 @@ namespace PhotoSquisher.Models
         //For each table in db, add DbSet<TableClass> TableProperty {get; set;}
         public DbSet<Photo> Photos { get; set; }
         public DbSet<Configuration> Configuration { get; set; }
+        public DbSet<IgnorePattern> IgnorePatterns { get; set; }
         
         /*TABLES TO IMPLEMENT
          * Compress Queue
@@ -35,8 +36,8 @@ namespace PhotoSquisher.Models
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
             DbPath = System.IO.Path.Join(path, databaseName);
-            //Console.WriteLine($"PhotoSquisherDbContext connection initialised");
-            //Console.WriteLine($"DbPath is {DbPath}");
+            Console.WriteLine($"PhotoSquisherDbContext connection initialised");
+            Console.WriteLine($"DbPath is {DbPath}");
         }
 
 
@@ -52,10 +53,12 @@ namespace PhotoSquisher.Models
             modelBuilder.Entity<Photo>()
                 .HasIndex(p => p.Path)
                 .IsUnique();
-            //unique constraint on Configuration config
+            //set primary key on Configuration config
             modelBuilder.Entity<Configuration>()
                 .HasKey(t => t.Config);
-                
+            modelBuilder.Entity<IgnorePattern>()
+                .HasKey(t => t.ignorePattern);
+
         }
     }
 }

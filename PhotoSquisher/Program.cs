@@ -1,9 +1,9 @@
-﻿//TODO
-
-
+﻿/*TODO
+ * if started as service, don't run ui
+ */
 using PhotoSquisher.Services;
-using PhotoSquisher.UI;
 using PhotoSquisher.Tools;
+using PhotoSquisher.UI;
 
 
 bool exit = false;
@@ -13,31 +13,31 @@ do
 
     Console.WriteLine("Main Menu:");
     new NumberedMenu([
-        new("Info",Info.GetInfo),
-        new("Scan Photos",IndexPhotosUI.Run),
+        new("Info",Info.Run),
+        new("Scan Photos",FileScannerUI.Run),
+        new("Process Photos", compressphotostest),
         new("Settings",SettingsUI.Run),
+        new("test", SettingsUI.UpdateSettingUI, new photoLibraryPath() ),
         new("Exit",() => exit = true),
-        new("test",MenuTest.Run),
     ]).Flow();
 
-/*old menu
-    do
+    static async void compressphotostest()
     {
+        try
+        {
+            await Task.Run(() => PhotoProcessor.Instance.StartQueue(new CancellationToken() ));
+            Console.WriteLine("Compressing photos, see Info for progress");
+            Info.Run();
+        }
+        catch (Exception ex)
+        {
+            PsDebug.printCaughtException(ex);
+        }
+    }
 
-        Console.WriteLine("Main Menu:");
-        new numberedMenu_Dictionary(new Dictionary<string, Action>
-    {
-        {"Info",Info.GetInfo},
-        {"Scan Photos",IndexPhotosUI.Run },
-        {"Compress Photos", numberedMenu_Dictionary.PlaceholderAction},
-        {"Menu Test",  MenuTest.Run},
-        {"Compress Test", ProcessPhoto.readWriteImageTest },
-         {"Queue Test", ProcessQueue.Run },
-    });
-*/
 
 
-    } while (exit != true);
+} while (exit != true);
 
 
 
