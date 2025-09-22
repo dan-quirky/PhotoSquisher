@@ -79,14 +79,14 @@ namespace PhotoSquisher.Services
             readPathBase = new photoLibraryPath().Value;
             outputPathBase = new outputPath().Value;
             QueueCountInitial = QueueCount;
-            await foreach (
-                Photo photo in unprocessedPhotos
+            await foreach (Photo photo in unprocessedPhotos
                 .AsAsyncEnumerable()
                 .WithCancellation(cT)
                 )
             {
                 cT.ThrowIfCancellationRequested();
-                await Process(db, photo);
+                using PhotoSquisherDbContext dbProcess = new(); //give process its own db instance to avoid race condition
+                await Process(dbProcess, photo);
             } 
         }
 

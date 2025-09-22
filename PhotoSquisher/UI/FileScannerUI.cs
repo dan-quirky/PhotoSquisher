@@ -25,7 +25,9 @@ namespace PhotoSquisher.UI
         {
             _ = Task.Run(async() => { new FileScanner(); }); //TODO mute console writes, output logs
             Console.WriteLine("Scanning for photos in the background, see Info for scan progress");
-            Info.Run();
+            Thread.Sleep(500);
+            //FIX Jumping straight to info hits a ObjectDisposedException at least sometimes. No clue why.
+            //Info.Run();
         }
 
         public static void ScanPhotosUI()

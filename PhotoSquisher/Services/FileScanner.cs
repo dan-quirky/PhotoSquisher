@@ -48,8 +48,15 @@ namespace PhotoSquisher.Services
     public class FileScanner //Slightly naively written singleton, PhotoProcessor has a more std implementation
     {
         
-        static int batchCountLimit = 100; 
-        static string photoLibraryDirectory = new photoLibraryPath().Value;
+        static int batchCountLimit = 100;
+
+        // This might be causing an System.TypeInitializationException because it's running far too early
+        //static string photoLibraryDirectory = new photoLibraryPath().Value;
+        //Solution: lazy loading, so nothing happens when the class is first initialised
+        //(lifted wholesale from an ai, go figure out what this actually means if it works)
+        static string? _photoLibraryDirectory;
+        static string photoLibraryDirectory
+            => _photoLibraryDirectory ??= new photoLibraryPath().Value;
 
         Queue<string> scanQueue;
         Queue<string> batchQueue;
@@ -61,9 +68,8 @@ namespace PhotoSquisher.Services
         public int FailedCount { get { return failedQueue.Count; } } 
         public int IgnoredCount { get; private set; } = 0;
         public static FileScanner? Instance { get; private set; } 
-        //Set this to instance in constructor, to access from elsewhere in app
-        //"Singletons" sound frowned upon, but this probably works fine here
-        //Can look into dependency injection
+        //Set this to instance in constructor, to access from elsewhere in 
+        //Photoprocessor uses more standard singleton pattern, this was done fairly naively
         public FileScanner()
         {
 

@@ -56,7 +56,7 @@ Scan Status:
                 while (!Console.KeyAvailable)
                 {
                     FileScanner? ActiveScan = FileScanner.Instance;
-                    if (ActiveScan != null)
+                    if (ActiveScan != null)  
                     {
                         double progress = (double)(ActiveScan.QueueCountInitial - ActiveScan.QueueCount) / (double)ActiveScan.QueueCountInitial;
                         WriteAtCursor(scan_pct_cur, 3, progress.ToString("P0"));
@@ -65,7 +65,7 @@ Scan Status:
                     }
                     if (PhotoProcessor.Instance != null)
                     {
-                        double progress = (double)(PhotoProcessor.Instance.QueueCount) / (double)PhotoProcessor.Instance.QueueCountInitial;
+                        double progress = 1 - (double)(PhotoProcessor.Instance.QueueCount) / (double)PhotoProcessor.Instance.QueueCountInitial;
                         string progress_str =  double.IsNaN(progress) ? "0%" : progress.ToString("P0"); 
                         string compressionRatio_str = double.IsNaN(PhotoProcessor.Instance.CompressionRatio) ? "Unavailable" : (PhotoProcessor.Instance.CompressionRatio).ToString("P0");
                         WriteAtCursor(comp_pct_cur, 3, progress_str);
