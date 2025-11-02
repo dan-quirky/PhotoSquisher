@@ -42,6 +42,7 @@ namespace PhotoSquisher.Services
                 if (await CreateDatabaseAsync() != true) throw new InvalidOperationException("Failed to create database");
                 Console.WriteLine("Done.");
                 Console.WriteLine("Resetting to default configuration");
+                //Add default values
                 using PhotoSquisherDbContext db = new();
                 db.AddRange([
                     //new Configuration{Config = "libraryPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\SamplePhotoLibraryHD" },

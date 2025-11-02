@@ -1,56 +1,35 @@
 ﻿/*TODO
- * if started as service, don't run ui
+if started as service, don't run ui  
+Implement service launcher
  */
 
 using PhotoSquisher.Services;
-using PhotoSquisher.Tools;
 using PhotoSquisher.UI;
 
 
-bool exit = false;
-Console.WriteLine("PhotoSquisher - Copyright 2025 No One In Particular"); Console.WriteLine(Environment.NewLine);
-do
+//To be set with command line argument
+bool startAsService = false;
+
+if (startAsService)
 {
-
-    Console.WriteLine("Main Menu:");
-    new NumberedMenu([
-        new("Info",Info.Run),
-        new("Scan Photos",FileScannerUI.Run),
-        new("Process Photos", compressphotostest),
-        new("Settings",SettingsUI.Run),
-        new("test", SettingsUI.UpdateSettingUI, new photoLibraryPath() ),
-        new("Exit",() => exit = true),
-    ]).Flow();
-
-    static async void compressphotostest()
+    while (true)
     {
-        try
-        {
-            await Task.Run(() => PhotoProcessor.Instance.StartQueue(new CancellationToken() ));
-            Console.WriteLine("Compressing photos, see Info for progress");
-            Info.Run();
-        }
-        catch (Exception ex)
-        {
-            PsDebug.printCaughtException(ex);
-        }
+        Console.WriteLine("PhotoSquisher service running");
+        ServiceLauncher.ServiceStart();
+        await Task.Delay((int)60e3);
+
     }
-
-
-
-} while (exit != true);
+}
+else
+{
+    MainMenu.Run();
+}
 
 
 
 /*
  * BUGS
- * 
- * Running scan and process simultaneously can cause
- *  InvalidOperationException: A second operation started on this context before a previous operation completed. Any instance members are not guaranteed to be thread safe.
- * Fix: ?? Easy option is block one from launching while the other is running BUT they should be be capable of running in parallel (and are capable of doing it for a while)
- *      Really need a way to block/queue multiple dbcontext instances
- *      Don't run them in parallel in UI (upsetting), and when running a service two will never run in parallel.
- *      
+ *     
  *      
  *      
  * When sitting on info with photoprocessor running: 

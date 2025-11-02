@@ -1,7 +1,7 @@
 ﻿// https://github.com/dlemstra/Magick.NET/tree/main/docs
 
 /*TODO
- * [DONE (maybe), imagemagick is mutlithreaded by default] Make compression multithreaded
+ * Make compression multithreaded - imagemagick should be multithreaded but seems to be defaulted to 1 thread in .net library without any way of increasing. Can multithread the image processing the step before it goes to imagemagick tho.
  * Convert console printing to logging
  * implement ResourceLimits 
  * Test with 8/16 bit magick.net, are they any worse/faster
@@ -16,9 +16,7 @@ namespace PhotoSquisher.Services
     {
         static MagickImage? photo; //for threading, probably need seperate instances of this
         static MagickImageInfo? info;
-
-
-        public  async static Task<bool> Compress(string filePath, string outputPath) 
+        public async static Task<bool> Compress(string filePath, string outputPath) 
         {
             bool taskResult = false; 
             try

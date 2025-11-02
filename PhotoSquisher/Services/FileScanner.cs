@@ -48,7 +48,7 @@ namespace PhotoSquisher.Services
     public class FileScanner //Slightly naively written singleton, PhotoProcessor has a more std implementation
     {
         
-        static int batchCountLimit = 100;
+        static int batchCountLimit = 1000;
 
         // This might be causing an System.TypeInitializationException because it's running far too early
         //static string photoLibraryDirectory = new photoLibraryPath().Value;
@@ -95,7 +95,7 @@ namespace PhotoSquisher.Services
             while (QueueCount > 0)
             {
                 Console.WriteLine("New Batch--------------------------------------");
-                await Task.Delay(1000);
+                //await Task.Delay(500);
                 ProcessedCount += await ScanBatch();
             }
             //FlagDeletedFiles
