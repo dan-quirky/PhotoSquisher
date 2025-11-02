@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,6 @@ namespace PhotoSquisher.Services
         }
         public async static void RebuildDatabase()
         {
-            //Todo This should only continue if the previous step didn't fail (i.e. delete fails if db is open in viewer). Sounds like a Task thing.
             try
             {
                 Console.WriteLine($"Rebuilding db...");
@@ -43,12 +43,14 @@ namespace PhotoSquisher.Services
                 Console.WriteLine("Done.");
                 Console.WriteLine("Resetting to default configuration");
                 //Add default values
+                string defaultPath= AppContext.BaseDirectory;
+                string libraryPathDefault = System.IO.Path.Join(defaultPath, "DefaultInput");
+                string outputPathDefault = System.IO.Path.Join(defaultPath, "DefaultOutput");
                 using PhotoSquisherDbContext db = new();
                 db.AddRange([
                     //new Configuration{Config = "libraryPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\SamplePhotoLibraryHD" },
-                    new Configuration{Config = "libraryPath", Value = @"D:\Users\Dan\Pictures\01 - Photo Library" },
-                    //new Configuration{Config = "outputPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\" },
-                    new Configuration("outputPath", @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\ImageMagicOutput\" ),
+                    new Configuration{Config = "libraryPath", Value = libraryPathDefault },
+                    new Configuration{Config = "outputPath", Value = outputPathDefault },
                     new IgnorePattern{ignorePattern = ".*" } 
                     ]);
                 await db.SaveChangesAsync();

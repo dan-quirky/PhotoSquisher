@@ -33,8 +33,11 @@ namespace PhotoSquisher.Models
             //QUESTION is local app data the best place to chuck the DB?
             // The following configures EF to create a Sqlite database file in the
             // special "local" folder for your platform
-            var folder = Environment.SpecialFolder.LocalApplicationData;
-            var path = Environment.GetFolderPath(folder);
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            
+            //put the db in the same folder as the exe
+            string path = AppContext.BaseDirectory;
             DbPath = System.IO.Path.Join(path, databaseName);
             Console.WriteLine($"PhotoSquisherDbContext connection initialised");
             Console.WriteLine($"DbPath is {DbPath}");

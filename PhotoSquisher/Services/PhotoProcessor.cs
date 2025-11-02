@@ -23,9 +23,16 @@ namespace PhotoSquisher.Services
 
         string readPathBase;
         string outputPathBase;
-        IQueryable<Photo> unprocessedPhotos;
+        IQueryable<Photo>? unprocessedPhotos;
 
-        public int QueueCount { get { return unprocessedPhotos?.Count() ?? 0; } } //ternary + null coalescing operators to make this null-safe (google it some more) 
+        public int QueueCount //This feels overcomplicated tbh
+        {
+            get
+            {
+                try { return unprocessedPhotos?.Count() ?? 0; }  //ternary + null coalescing operators to make this null-safe (google it some more)
+                catch (ObjectDisposedException ex) { return 0; }
+            }
+        }
         public int? QueueCountInitial { get; private set; } = 0;
         public int ProcessedCount { get; private set; } = 0;
         public int FailedCount { get; private set; } = 0;
@@ -35,9 +42,11 @@ namespace PhotoSquisher.Services
         public double CompressionRatio { get { return (double)sumOutputSize / (double)sumInputSize; } }
 
 
-        private async Task<bool> Process(PhotoSquisherDbContext db, Photo photo) //FIXME queue will probably loop forever if processed flags aren't set
+        private async Task<bool> Process(int photoId)
         {
+            using PhotoSquisherDbContext db = new(); //give process its own db instance to avoid race condition
             //set up read/write paths
+            Photo photo = db.Photos.Where(p => p.PhotoId == photoId).Single();
             string readPath = Path.Join(readPathBase, photo.Path);
             string outputPathFilename = Path.GetFileNameWithoutExtension(photo.Path) + "_Squished.jpg";
             string outputPathRelative = Path.Join(Path.GetDirectoryName(photo.Path), outputPathFilename);
@@ -76,6 +85,12 @@ namespace PhotoSquisher.Services
             using PhotoSquisherDbContext db = new();
             //Get queue and settings from db when queue is restarted
             unprocessedPhotos = db.Photos.Where(p => p.Processed_Flag == false);
+            if (!unprocessedPhotos.Any())
+            {
+                Console.WriteLine("No unprocessed photos remaining");
+                return;
+            }
+             
             readPathBase = new photoLibraryPath().Value;
             outputPathBase = new outputPath().Value;
             QueueCountInitial = QueueCount;
@@ -85,9 +100,10 @@ namespace PhotoSquisher.Services
                 )
             {
                 cT.ThrowIfCancellationRequested();
-                using PhotoSquisherDbContext dbProcess = new(); //give process its own db instance to avoid race condition
-                await Process(dbProcess, photo);
-            } 
+                await Process(photo.PhotoId);
+            }
+
+            
         }
 
         //TEST parallel queues? multiple await calls

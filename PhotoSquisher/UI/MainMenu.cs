@@ -42,7 +42,7 @@ namespace PhotoSquisher.UI
                 {
                     await Task.Run(() => PhotoProcessor.Instance.StartQueue(new CancellationToken()));
                     Console.WriteLine("Compressing photos, see Info for progress");
-                    Info.Run();
+                    //Info.Run();
                 }
                 catch (Exception ex)
                 {
