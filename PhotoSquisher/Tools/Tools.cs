@@ -39,15 +39,30 @@ namespace PhotoSquisher.Tools
             Console.ReadLine();
 
         }
-
+    }
+    public class PsLogger
+    {
         public static void writeOutCaughtException(Exception ex)
         {
-            string logPath = System.IO.Path.Join(AppContext.BaseDirectory, "logs", $"UnhandledException_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.log");
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(logPath));
-            using System.IO.StreamWriter file = new(logPath, append: true);
+            string errorLogPath = System.IO.Path.Join(AppContext.BaseDirectory, "logs", $"UnhandledException_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.log");
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(errorLogPath));
+            using System.IO.StreamWriter file = new(errorLogPath, append: true);
             file.WriteLine($"{DateTime.Now}: {ex.GetType()} {ex.Message}");
             file.WriteLine(ex.InnerException);
             file.WriteLine(ex.StackTrace);
+            file.WriteLine();
+        }
+
+        public static void LogLine(string logLine)
+        {
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Global.logPath));
+            using System.IO.StreamWriter file = new(Global.logPath, append: true);
+            file.WriteLine(logLine);
+        }
+        public static void LogLine()
+        {
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Global.logPath));
+            using System.IO.StreamWriter file = new(Global.logPath, append: true);
             file.WriteLine();
         }
     }

@@ -95,15 +95,16 @@ namespace PhotoSquisher.Services
         {
             while (QueueCount > 0)
             {
-                Console.WriteLine("New Batch--------------------------------------");
+                PsLogger.LogLine("New Batch--------------------------------------");
                 //await Task.Delay(500);
                 ProcessedCount += await ScanBatch();
             }
             //FlagDeletedFiles
-            //Console.WriteLine("Fails: ");
-            foreach (string fail in failedQueue) Console.WriteLine(fail);
+            PsLogger.LogLine("Fails: ");
+            foreach (string fail in failedQueue) PsLogger.LogLine(fail);
             await RescanFails();
-            Console.WriteLine($"Scan complete : {QueueCountInitial} files scanned {Environment.NewLine}{ProcessedCount} files added, {IgnoredCount} ignored, {FailedCount} failed.");
+            PsLogger.LogLine();
+            PsLogger.LogLine($"Scan complete : {QueueCountInitial} files scanned {Environment.NewLine}{ProcessedCount} files added, {IgnoredCount} ignored, {FailedCount} failed.");
 
         }
         async Task<int> ScanBatch()
@@ -130,18 +131,13 @@ namespace PhotoSquisher.Services
                     foreach (string fail in batchQueue) failedQueue.Enqueue(fail);
                     return 0; //No lines changed 
                 }
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine(ex.Message);
-                //    return 0;
-                //}
         }
         void ScanFile(PhotoSquisherDbContext db, string filePath)
         {
             string relativeFilePath = filePath.Substring(photoLibraryDirectory.Length + 1);
             if (Validate.pathIsUnique(db, relativeFilePath))
             {
-                //Console.WriteLine($"{relativeFilePath} is unique.");
+                //PsLogger.LogLine($"{relativeFilePath} is unique.");
                 db.Add(new Photo
                 {
                     Path = relativeFilePath,
@@ -150,7 +146,7 @@ namespace PhotoSquisher.Services
             }
             else
             {
-                //Console.WriteLine($"{relativeFilePath} is a duplicate, skipped.");
+                PsLogger.LogLine($"{relativeFilePath} is a duplicate, skipped.");
             }
         }
 
@@ -167,7 +163,7 @@ namespace PhotoSquisher.Services
                 try { ProcessedCount += await db.SaveChangesAsync(); } //commit retries one line at a time
                 catch (DbUpdateException ex)
                 {
-                    //Console.WriteLine($"Commit failed: {ex.Message}{Environment.NewLine}{ex.InnerException}");
+                    //PsLogger.LogLine($"Commit failed: {ex.Message}{Environment.NewLine}{ex.InnerException}");
                     failedQueue.Enqueue(filePath);
                 }
 

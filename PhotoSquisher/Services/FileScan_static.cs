@@ -40,7 +40,7 @@ using System.Diagnostics;
  */
 namespace PhotoSquisher.Services
 {
-    internal static class FileScan_static
+    internal static class FileScan_static ///defunct
     {
         public async static Task<int> Scan()
         {

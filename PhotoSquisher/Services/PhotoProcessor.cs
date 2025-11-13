@@ -53,10 +53,10 @@ namespace PhotoSquisher.Services
             string outputPath = Path.Join(outputPathBase, outputPathRelative);
             if (!Path.Exists(readPath)) //skip if path doesn't exist
             {
-                Console.WriteLine($"Couldn't locate {readPath}, skipped.");
+                PsLogger.LogLine($"Couldn't locate {readPath}, skipped.");
                 return false;
             }
-            Console.WriteLine($"Attempting to compress {photo.Path}");
+            PsLogger.LogLine($"Attempting to compress {photo.Path}");
 
             bool ProcessedSucessfully = await SquishPhoto.Compress(readPath, outputPath); //compress the photo
 
@@ -74,7 +74,7 @@ namespace PhotoSquisher.Services
             }
             else
             {
-                Console.WriteLine($"Couldn't compress {readPath}, skipped.");
+                PsLogger.LogLine($"Couldn't compress {readPath}, skipped.");
                 photo.Processed_Flag = true;
                 photo.Failed_Flag = true;
                 await db.SaveChangesAsync();
@@ -90,7 +90,7 @@ namespace PhotoSquisher.Services
             unprocessedPhotos = db.Photos.Where(p => p.Processed_Flag == false);
             if (!unprocessedPhotos.Any())
             {
-                Console.WriteLine("No unprocessed photos remaining");
+                PsLogger.LogLine("No unprocessed photos remaining");
                 return;
             }
              

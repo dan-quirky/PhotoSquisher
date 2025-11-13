@@ -1,6 +1,7 @@
 ﻿using PhotoSquisher.Models;
 using Ignore;
 using System.Text.RegularExpressions;
+using PhotoSquisher.Tools;
 
 namespace PhotoSquisher.Services
 {
@@ -45,7 +46,7 @@ namespace PhotoSquisher.Services
             foreach (string ip in ignorePatterns)
                 if (Regex.IsMatch(testValue, ip))
                 {
-                    Console.WriteLine("ignored" + testValue);
+                    PsLogger.LogLine("ignored" + testValue);
                     return true;
                 }
             //Console.WriteLine("Ignore Patterns: ");

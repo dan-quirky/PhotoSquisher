@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using PhotoSquisher.Models;
 
+//TODO
+//Unwind ui operations (i.e. console.writeline) from services i.e. deletedatabaseasync 
+
 namespace PhotoSquisher.Services
 {
     public static class maintainDb
@@ -33,7 +36,7 @@ namespace PhotoSquisher.Services
         {
             try
             {
-                
+
                 Console.WriteLine($"Rebuilding db...");
                 Console.WriteLine(Environment.NewLine
                     + "Deleting old db...");

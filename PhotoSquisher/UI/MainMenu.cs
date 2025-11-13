@@ -46,7 +46,7 @@ namespace PhotoSquisher.UI
                 }
                 catch (Exception ex)
                 {
-                    PsDebug.writeOutCaughtException(ex);
+                    PsLogger.writeOutCaughtException(ex);
                 }
             }
 

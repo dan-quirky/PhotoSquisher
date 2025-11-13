@@ -9,6 +9,7 @@
 
 
 using ImageMagick;
+using PhotoSquisher.Tools;
 
 namespace PhotoSquisher.Services
 {
@@ -53,7 +54,7 @@ namespace PhotoSquisher.Services
             }
             catch (MagickException ex)
             {
-                Console.WriteLine($"Skipped {filePath}: {ex.Message} {ex.InnerException}");
+                PsLogger.LogLine($"Skipped {filePath}: {ex.Message} {ex.InnerException}");
             }
             //catch (Exception ex)//This generic catch won't be deactivated by the Debugging check. Should probably care about that.
             //{

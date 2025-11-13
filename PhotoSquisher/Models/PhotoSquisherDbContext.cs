@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PhotoSquisher.Tools;
 
 namespace PhotoSquisher.Models
 {
@@ -38,8 +39,9 @@ namespace PhotoSquisher.Models
             //put the db in the same folder as the exe
             string path = AppContext.BaseDirectory;
             DbPath = System.IO.Path.Join(path, databaseName);
-            Console.WriteLine($"PhotoSquisherDbContext connection initialised");
-            Console.WriteLine($"DbPath is {DbPath}");
+            //Console.WriteLine($"PhotoSquisherDbContext connection initialised");
+            //Console.WriteLine($"DbPath is {DbPath}");
+            PsLogger.LogLine($"Initialised PhotoSquisher db connection at {DbPath}");
         }
 
 

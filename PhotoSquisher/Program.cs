@@ -9,10 +9,12 @@ using PhotoSquisher.Services;
 using PhotoSquisher.Tools;
 using PhotoSquisher.UI;
 
+
 using (PhotoSquisherDbContext db = new() )
 {
     if (!db.Database.CanConnect()) maintainDb.RebuildDatabase();
 }
+
 
 //To be set with command line argument
 bool startAsService = false;
@@ -21,7 +23,7 @@ if (startAsService)
 {
     while (true)
     {
-        Console.WriteLine("PhotoSquisher service running");
+        PsLogger.LogLine("PhotoSquisher service running");
         ServiceLauncher.ServiceStart();
         await Task.Delay((int)60e3);
 
@@ -30,10 +32,13 @@ if (startAsService)
 else
 {
     try { MainMenu.Run(); }
-    catch (Exception ex) { PsDebug.writeOutCaughtException(ex); }
+    catch (Exception ex) { PsLogger.writeOutCaughtException(ex); }
 }
 
-
+public static class Global
+{
+    public static string logPath = System.IO.Path.Join(AppContext.BaseDirectory, "logs", $"PhotoSquisher_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.log");
+}
 
 /*
  * BUGS
