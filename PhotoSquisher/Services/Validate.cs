@@ -1,5 +1,6 @@
 ﻿using PhotoSquisher.Models;
 using Ignore;
+using System.Text.RegularExpressions;
 
 namespace PhotoSquisher.Services
 {
@@ -22,16 +23,36 @@ namespace PhotoSquisher.Services
 
             return firstDuplicateQuery is null && firstLocalDuplicateQuery is null;
         }
-        public static bool PathIsNotIgnored(PhotoSquisherDbContext db, string testValue) 
+        public static bool PathIsNotIgnored(PhotoSquisherDbContext db, string testValue) //defunct
         {
-        //https://github.com/goelhardik/ignore
+            //https://github.com/goelhardik/ignore
 
             Ignore.Ignore Ignores = new();
-            Ignores.Add(from i in db.IgnorePatterns select i.ignorePattern);
+            IEnumerable<string> ignorePatterns = db.IgnorePatterns.Select(i => i.ignorePattern);
+            Ignores.Add(ignorePatterns);
             bool pathIsNotIgnored = Ignores.IsIgnored(testValue) ? false : true;
-            if (!pathIsNotIgnored) Console.WriteLine(testValue);
+            if (!pathIsNotIgnored) Console.WriteLine("ignored" + testValue);
+            Console.WriteLine("Ignore Patterns: ");
+            foreach (var ip in ignorePatterns) Console.WriteLine(ip);
+            Console.WriteLine("didn't ignore" + testValue);
             return pathIsNotIgnored;
-            
+
+        }
+        public static bool PathIsIgnored(PhotoSquisherDbContext db, string testValue)
+        {
+
+            IEnumerable<string> ignorePatterns = db.IgnorePatterns.Select(i => i.ignorePattern);
+            foreach (string ip in ignorePatterns)
+                if (Regex.IsMatch(testValue, ip))
+                {
+                    Console.WriteLine("ignored" + testValue);
+                    return true;
+                }
+            //Console.WriteLine("Ignore Patterns: ");
+            //foreach (var ip in ignorePatterns) Console.WriteLine(ip);
+            //Console.WriteLine("didn't ignore" + testValue);
+            return false;
+
         }
     }
 }

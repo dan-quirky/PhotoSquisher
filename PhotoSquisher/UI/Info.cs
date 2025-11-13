@@ -78,7 +78,7 @@ Scan Status:
                 }
 
             }
-            catch (Exception ex) { PsDebug.printCaughtException(ex); }
+            catch (Exception ex) { PsDebug.writeOutCaughtException(ex); }
         }
         internal static void WriteAtCursor((int left, int top) cursor, int numChars, string msg)
         {

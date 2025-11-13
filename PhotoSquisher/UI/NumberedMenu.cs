@@ -48,13 +48,15 @@ namespace PhotoSquisher.UI
                 menuItems[i].Invoke();//Call the method stored in Value of MenuItems at that index
                 noValidSelection = false; //will this ever be hit if the method is called above?
             }
-            catch { Console.Clear(); Console.WriteLine($"Invalid selection: {userInput}"); }
+            catch (FormatException ex) { Console.Clear(); Console.WriteLine($"Invalid selection: {userInput}");  }
+            catch (IndexOutOfRangeException ex) { Console.Clear(); Console.WriteLine($"Invalid selection: {userInput}"); }
 
         }
 
 
     }
-    internal class numberedMenu_Dictionary
+    
+    internal class numberedMenu_Dictionary ////defunct
     {
 
         internal Dictionary<string, Action> MenuItems { get; set; } //I don't remember why i didn't just make this a list of tuples

@@ -72,13 +72,14 @@ namespace PhotoSquisher.Services
         //Photoprocessor uses more standard singleton pattern, this was done fairly naively
         public FileScanner()
         {
-
+            //TODO Break scan into chunks, it hangs for a while when starting scan while EnumerateFiles does work
             IEnumerable<string> AllFiles = Directory.EnumerateFiles(photoLibraryDirectory, "*", SearchOption.AllDirectories);  
             scanQueue = new Queue<string>(AllFiles.Count()); //Set capacity to max no.files
-            using (PhotoSquisherDbContext db = new()) 
-                foreach (string file in AllFiles) 
-                    if (Validate.PathIsNotIgnored(db, file)) 
+            using (PhotoSquisherDbContext db = new())
+                foreach (string file in AllFiles)
+                    if (!Validate.PathIsIgnored(db, file))
                         scanQueue.Enqueue(file);
+                    else IgnoredCount++;
             failedQueue = new Queue<string>();
             QueueCountInitial = QueueCount;
             if (Instance != null) { throw new Exception("Too many instances"); }

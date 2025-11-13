@@ -35,7 +35,6 @@ namespace PhotoSquisher.Models
             // special "local" folder for your platform
             //var folder = Environment.SpecialFolder.LocalApplicationData;
             //var path = Environment.GetFolderPath(folder);
-            
             //put the db in the same folder as the exe
             string path = AppContext.BaseDirectory;
             DbPath = System.IO.Path.Join(path, databaseName);

@@ -75,6 +75,9 @@ namespace PhotoSquisher.Services
             else
             {
                 Console.WriteLine($"Couldn't compress {readPath}, skipped.");
+                photo.Processed_Flag = true;
+                photo.Failed_Flag = true;
+                await db.SaveChangesAsync();
                 return false;
             }
         }

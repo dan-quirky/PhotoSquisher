@@ -11,7 +11,8 @@ namespace PhotoSquisher.Models
     {
         public int PhotoId { get; set; }
         public required string Path { get; set; }
-        public bool Processed_Flag { get; set; } 
+        public bool Processed_Flag { get; set; } = false;
         public string? Processed_Path { get; set; }
+        public bool Failed_Flag { get; set; } = false;
     }
 }

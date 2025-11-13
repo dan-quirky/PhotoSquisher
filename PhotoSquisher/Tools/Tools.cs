@@ -12,7 +12,6 @@ namespace PhotoSquisher.Tools
     {
         bool debugging = true;
 
-        //[Conditional("DEBUG")] //There's probably a cleaner way than decorating every debug metho
         public static void printProperties(object obj) 
         { Console.WriteLine($"Inspecting {obj} :");
             foreach (var property in obj.GetType().GetProperties())
@@ -24,13 +23,11 @@ namespace PhotoSquisher.Tools
                  Console.WriteLine($"    {name}: {value} ({type}) ");
             }
         }
-        //[Conditional("DEBUG")]
         public static void printVariable(object? obj)
         {
             Console.WriteLine($"{nameof(obj)} = {obj} ({obj.GetType()})" );
         }
 
-        //[Conditional("DEBUG")]
         public static void printCaughtException(Exception ex)
         {
             Console.WriteLine($"{Environment.NewLine}Something went wrong: {ex.GetType()} {ex.Message}");
@@ -43,5 +40,17 @@ namespace PhotoSquisher.Tools
 
         }
 
+        public static void writeOutCaughtException(Exception ex)
+        {
+            string logPath = System.IO.Path.Join(AppContext.BaseDirectory, "logs", $"UnhandledException_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.log");
+            Console.WriteLine(logPath);
+            Console.ReadLine();
+            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(logPath));
+            using System.IO.StreamWriter file = new(logPath, append: true);
+            file.WriteLine($"{DateTime.Now}: {ex.GetType()} {ex.Message}");
+            file.WriteLine(ex.InnerException);
+            file.WriteLine(ex.StackTrace);
+            file.WriteLine();
+        }
     }
 }

@@ -8,8 +8,8 @@ namespace PhotoSquisher.UI
         {
             new NumberedMenu(new[]
             {
-                new MenuItem("Scan for new photos, instance class",ScanPhotosUI),
-                new MenuItem("Scan for new photos, instance class in background",ScanPhotosBackground),
+                new MenuItem("Scan for new photos",ScanPhotosUI),
+                new MenuItem("Scan for new photos in background",ScanPhotosBackground),
                 new MenuItem("Re-index all photos",numberedMenu_Dictionary.PlaceholderAction),
                 new MenuItem("A secret third option", numberedMenu_Dictionary.FireworksPlaceholderAction),
                 new MenuItem("Go back", Console.Clear )

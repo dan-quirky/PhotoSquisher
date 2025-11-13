@@ -3,9 +3,16 @@ if started as service, don't run ui
 Implement service launcher
  */
 
+using System.Linq.Expressions;
+using PhotoSquisher.Models;
 using PhotoSquisher.Services;
+using PhotoSquisher.Tools;
 using PhotoSquisher.UI;
 
+using (PhotoSquisherDbContext db = new() )
+{
+    if (!db.Database.CanConnect()) maintainDb.RebuildDatabase();
+}
 
 //To be set with command line argument
 bool startAsService = false;
@@ -22,7 +29,8 @@ if (startAsService)
 }
 else
 {
-    MainMenu.Run();
+    try { MainMenu.Run(); }
+    catch (Exception ex) { PsDebug.writeOutCaughtException(ex); }
 }
 
 

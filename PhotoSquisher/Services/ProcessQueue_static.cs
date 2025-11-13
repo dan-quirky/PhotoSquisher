@@ -15,7 +15,7 @@ namespace PhotoSquisher.Services
     //not hugely OOP but maybe thats fine? Is there any advantage to making this an initialisable queue object which can be binned when done?
     //also a lot of moving parts, need to make this slightly more robust so e.g. an error compressing the photos doesn't mess up the db update
     //Could/should also be async/multithreaded
-    internal class ProcessQueue_static
+    internal class ProcessQueue_static ///defunct
     {
         static string outputPathBase { get; set; }
         public static int QueueLength { get; private set; }

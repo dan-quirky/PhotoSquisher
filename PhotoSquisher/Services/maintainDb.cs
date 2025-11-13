@@ -12,15 +12,16 @@ namespace PhotoSquisher.Services
     {
         public async static Task<bool> CreateDatabaseAsync()
         {
-            using var context = new PhotoSquisherDbContext(); //using ensures the dbcontext gets disposed of properly, not sure how tho
-            return await context.Database.EnsureCreatedAsync();
+            using var db = new PhotoSquisherDbContext(); //using ensures the dbcontext gets disposed of properly
+            return await db.Database.EnsureCreatedAsync();
         }
         public async static Task<bool> DeleteDatabaseAsync()
         {
             try
             {
-                using var context = new PhotoSquisherDbContext();
-                return await context.Database.EnsureDeletedAsync();
+                using var db = new PhotoSquisherDbContext();
+                if (db.Database.CanConnect()) { return await db.Database.EnsureDeletedAsync(); }
+                else return true;
             }
             catch (System.IO.IOException ex)
             {
@@ -32,6 +33,7 @@ namespace PhotoSquisher.Services
         {
             try
             {
+                
                 Console.WriteLine($"Rebuilding db...");
                 Console.WriteLine(Environment.NewLine
                     + "Deleting old db...");
@@ -46,12 +48,14 @@ namespace PhotoSquisher.Services
                 string defaultPath= AppContext.BaseDirectory;
                 string libraryPathDefault = System.IO.Path.Join(defaultPath, "DefaultInput");
                 string outputPathDefault = System.IO.Path.Join(defaultPath, "DefaultOutput");
+                foreach (string path in new[] {libraryPathDefault, outputPathDefault}) Directory.CreateDirectory(path);
                 using PhotoSquisherDbContext db = new();
                 db.AddRange([
                     //new Configuration{Config = "libraryPath", Value = @"C:\Users\Dan\CodeProjects\PhotoSquisher\test bits\SamplePhotoLibraryHD" },
                     new Configuration{Config = "libraryPath", Value = libraryPathDefault },
                     new Configuration{Config = "outputPath", Value = outputPathDefault },
-                    new IgnorePattern{ignorePattern = ".*" } 
+                    new IgnorePattern{ignorePattern = @"[\\/]\." }, //regex match any file/folder beginning with "."
+                    new IgnorePattern{ignorePattern = @".*\.xmp$" } //regex match any xmp file 
                     ]);
                 await db.SaveChangesAsync();
             }

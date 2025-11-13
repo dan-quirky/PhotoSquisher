@@ -32,7 +32,7 @@ namespace PhotoSquisher.UI
                 new ("Scan Photos",FileScannerUI.Run),
                 new ("Process Photos", compressphotostest),
                 new ("Settings",SettingsUI.Run),
-                new ("test", SettingsUI.UpdateSettingUI, new photoLibraryPath() ),
+                new ("test", () => throw new Exception() ),
                 new ("Exit",() => exit = true),
             ]).Flow();
 
@@ -46,7 +46,7 @@ namespace PhotoSquisher.UI
                 }
                 catch (Exception ex)
                 {
-                    PsDebug.printCaughtException(ex);
+                    PsDebug.writeOutCaughtException(ex);
                 }
             }
 
