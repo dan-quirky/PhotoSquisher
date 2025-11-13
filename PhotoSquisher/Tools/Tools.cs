@@ -43,8 +43,6 @@ namespace PhotoSquisher.Tools
         public static void writeOutCaughtException(Exception ex)
         {
             string logPath = System.IO.Path.Join(AppContext.BaseDirectory, "logs", $"UnhandledException_{DateTime.Now.ToString("yyyy-MM-dd_HHmmss")}.log");
-            Console.WriteLine(logPath);
-            Console.ReadLine();
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(logPath));
             using System.IO.StreamWriter file = new(logPath, append: true);
             file.WriteLine($"{DateTime.Now}: {ex.GetType()} {ex.Message}");
