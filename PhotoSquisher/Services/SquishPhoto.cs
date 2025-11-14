@@ -40,6 +40,7 @@ namespace PhotoSquisher.Services
                 }
                 photo.Quality = 75;
                 photo.Settings.SetDefine(MagickFormat.Jpeg, "interlace", "Plane"); // Enable interlacing, improves compression for *reasons*, no obvious quality loss
+                photo.Settings.SetDefine(MagickFormat.Jpeg, "preserve", "true"); // keep metadata
                 photo.ColorSpace = info.ColorSpace; //Convert back to original colourspace (usually sRGB)
 
                                                                            
@@ -73,7 +74,7 @@ namespace PhotoSquisher.Services
             }
             catch (MagickException ex) when (ex.Message.Contains("Unsupported file format"))
             {
-                //Console.WriteLine(Environment.NewLine + "Invalid file extension, reading file with fallback option");
+                PsLogger.LogLine(Environment.NewLine + "Invalid file extension, reading file with fallback option");
                 FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
                 photo = new MagickImage(fs);
                 fs.Position = 0;

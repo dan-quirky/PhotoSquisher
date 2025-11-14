@@ -88,6 +88,7 @@ namespace PhotoSquisher.Services
             using PhotoSquisherDbContext db = new();
             //Get queue and settings from db when queue is restarted
             unprocessedPhotos = db.Photos.Where(p => p.Processed_Flag == false);
+            unprocessedPhotos = db.Photos.Where(p => true);
             if (!unprocessedPhotos.Any())
             {
                 PsLogger.LogLine("No unprocessed photos remaining");
