@@ -30,13 +30,13 @@ namespace PhotoSquisher.UI
             new NumberedMenu([
                 new ("Info",Info.Run),
                 new ("Scan Photos",FileScannerUI.Run),
-                new ("Process Photos", compressphotostest),
+                new ("Process Photos", CompressPhotos),
                 new ("Settings",SettingsUI.Run),
-                new ("test", () => throw new Exception() ),
+                new ("Exception Test", () => throw new Exception() ),
                 new ("Exit",() => exit = true),
             ]).Flow();
 
-            static async void compressphotostest()
+            static async void CompressPhotos()
             {
                 try
                 {
@@ -51,8 +51,7 @@ namespace PhotoSquisher.UI
             }
 
 
-
-        } while (exit != true) ;
+            } while (exit != true) ;
 
         }
 

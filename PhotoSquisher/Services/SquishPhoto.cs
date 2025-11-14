@@ -13,11 +13,11 @@ using PhotoSquisher.Tools;
 
 namespace PhotoSquisher.Services
 {
-    internal class SquishPhoto //Static class to split out the code that depends on imagemagick
+    internal class SquishPhoto 
     {
-        static MagickImage? photo; //for threading, probably need seperate instances of this
-        static MagickImageInfo? info;
-        public async static Task<bool> Compress(string filePath, string outputPath) 
+        MagickImage? photo; 
+        MagickImageInfo? info;
+        public async Task<bool> Compress(string filePath, string outputPath) 
         {
             bool taskResult = false; 
             try
@@ -64,7 +64,7 @@ namespace PhotoSquisher.Services
             return taskResult;
 
         }
-        internal static void OpenFile(string filePath)
+        internal void OpenFile(string filePath)
         {
             try
             {

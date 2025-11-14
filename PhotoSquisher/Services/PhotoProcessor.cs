@@ -25,15 +25,16 @@ namespace PhotoSquisher.Services
         string outputPathBase;
         IQueryable<Photo>? unprocessedPhotos;
 
-        public int QueueCount //This feels overcomplicated tbh
-        {
-            get
-            {
-                try { return unprocessedPhotos?.Count() ?? 0; }  //ternary + null coalescing operators to make this null-safe (google it some more)
-                catch (ObjectDisposedException ex) { return 0; }
-            }
-        }
-        public int? QueueCountInitial { get; private set; } = 0;
+        //public int QueueCountInitial //This feels overcomplicated tbh
+        //{
+        //    get
+        //    {
+        //        try { return unprocessedPhotos?.ToListAsync().Count() ?? 0; }  //ternary + null coalescing operators to make this null-safe (google it some more)
+        //        catch (ObjectDisposedException ex) { return 0; }
+        //    }
+        //}
+        public int QueueCountInitial { get; private set; } = 0;
+        public int QueueCount { get{ return QueueCountInitial - ProcessedCount - FailedCount; } }
         public int ProcessedCount { get; private set; } = 0;
         public int FailedCount { get; private set; } = 0;
         public int IgnoredCount { get; private set; } = 0;
@@ -58,18 +59,16 @@ namespace PhotoSquisher.Services
             }
             PsLogger.LogLine($"Attempting to compress {photo.Path}");
 
-            bool ProcessedSucessfully = await SquishPhoto.Compress(readPath, outputPath); //compress the photo
+            bool ProcessedSucessfully = await new SquishPhoto().Compress(readPath, outputPath); //compress the photo
 
             if (ProcessedSucessfully) //if sucessful, update flag and path in db
             {
                 photo.Processed_Flag = true;
                 photo.Processed_Path = outputPathRelative;
                 await db.SaveChangesAsync();
-
                 sumInputSize += (int)new FileInfo(readPath).Length;
                 sumOutputSize += (int) new FileInfo(outputPath).Length;
-
-
+                ProcessedCount++;
                 return true;
             }
             else
@@ -78,6 +77,7 @@ namespace PhotoSquisher.Services
                 photo.Processed_Flag = true;
                 photo.Failed_Flag = true;
                 await db.SaveChangesAsync();
+                FailedCount++;
                 return false;
             }
         }
@@ -93,10 +93,12 @@ namespace PhotoSquisher.Services
                 PsLogger.LogLine("No unprocessed photos remaining");
                 return;
             }
-             
+
             readPathBase = new photoLibraryPath().Value;
             outputPathBase = new outputPath().Value;
-            QueueCountInitial = QueueCount;
+            QueueCountInitial = unprocessedPhotos.Count();
+            ProcessedCount = 0;
+            FailedCount = 0;
             await foreach (Photo photo in unprocessedPhotos
                 .AsAsyncEnumerable()
                 .WithCancellation(cT)
@@ -104,12 +106,49 @@ namespace PhotoSquisher.Services
             {
                 cT.ThrowIfCancellationRequested();
                 await Process(photo.PhotoId);
+                //PsLogger.LogLine(QueueCountInitial.ToString());
+                //PsLogger.LogLine(QueueCount.ToString());
+                //PsLogger.LogLine(ProcessedCount.ToString());
+                //PsLogger.LogLine(FailedCount.ToString());
             }
-
-            
         }
 
-        //TEST parallel queues? multiple await calls
+
+        //Parallel Queue Test
+        //Didn't work Magick.Net HATES concurrency, quickly hits a System.ExecutionEngineException
+        /*
+        public async Task StartQueueParallel(CancellationToken cT) //Todo add cancellation
+        {
+
+            using PhotoSquisherDbContext db = new();
+            //Get queue and settings from db when queue is restarted
+            //unprocessedPhotos = db.Photos.Where(p => p.Processed_Flag == false);
+            unprocessedPhotos = db.Photos.Where(p => true);
+            if (!unprocessedPhotos.Any())
+            {
+                PsLogger.LogLine("No unprocessed photos remaining");
+                return;
+            }
+
+            readPathBase = new photoLibraryPath().Value;
+            outputPathBase = new outputPath().Value;
+            QueueCountInitial = unprocessedPhotos.Count();
+            ProcessedCount = 0;
+            FailedCount = 0;
+
+            //await Parallel.ForEachAsync(unprocessedPhotos, new ParallelOptions { CancellationToken = cT, MaxDegreeOfParallelism = Environment.ProcessorCount / 2 }, async (photo, token) =>
+            await Parallel.ForEachAsync(unprocessedPhotos, new ParallelOptions { CancellationToken = cT, MaxDegreeOfParallelism = 1 }, async (photo, token) =>
+            {
+                //token.ThrowIfCancellationRequested();
+                await Process(photo.PhotoId);
+            });
+
+
+
+
+        }
+        */
+
 
     }
 }

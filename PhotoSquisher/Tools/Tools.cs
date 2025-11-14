@@ -51,19 +51,28 @@ namespace PhotoSquisher.Tools
             file.WriteLine(ex.InnerException);
             file.WriteLine(ex.StackTrace);
             file.WriteLine();
+            LogLine($"Something went extremely wrong, error logged at {errorLogPath}");
         }
 
+        private static readonly object logLock = new();
         public static void LogLine(string logLine)
         {
+
+            lock (logLock)
+            {
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Global.logPath));
             using System.IO.StreamWriter file = new(Global.logPath, append: true);
             file.WriteLine(logLine);
+            }
         }
         public static void LogLine()
         {
+            lock (logLock)
+            {
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Global.logPath));
             using System.IO.StreamWriter file = new(Global.logPath, append: true);
             file.WriteLine();
+            }
         }
     }
 }

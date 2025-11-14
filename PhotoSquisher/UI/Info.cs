@@ -37,19 +37,21 @@ Scan Status:
                 (int, int) scan_items_cursor = (Console.CursorLeft, Console.CursorTop);
                 Console.Write(new string(' ', 7));
                 Console.Write(" items remaining");
-
-                Console.WriteLine();
+                //Compression queue 
+                Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("Compress Queue Status:");
                 (int, int) comp_pct_cur = (Console.CursorLeft, Console.CursorTop);
-                Console.Write(new string('.', 4));
+                Console.Write(new string(' ', 4));
                 Console.Write($" complete - ");
                 (int, int) comp_items_cur = (Console.CursorLeft, Console.CursorTop);
                 Console.Write(new string(' ', 7));
                 Console.Write(" items remaining");
-                Console.Write(" Average Compression Ratio is ");
+                Console.WriteLine();
+                Console.Write("     Average Compression Ratio is ");
                 (int, int) comp_ratio_cur = (Console.CursorLeft, Console.CursorTop);
                 Console.Write(new string('.', 11));
-                Console.WriteLine();
+
+                Console.WriteLine(Environment.NewLine);
                 Console.WriteLine("Press any key to go back...");
                 Console.WriteLine();
                 int endLine = Console.CursorTop;
@@ -67,7 +69,7 @@ Scan Status:
                     {
                         double progress = 1 - (double)(PhotoProcessor.Instance.QueueCount) / (double)PhotoProcessor.Instance.QueueCountInitial;
                         string progress_str =  double.IsNaN(progress) ? "0%" : progress.ToString("P0"); 
-                        string compressionRatio_str = double.IsNaN(PhotoProcessor.Instance.CompressionRatio) ? "Unavailable" : (PhotoProcessor.Instance.CompressionRatio).ToString("P0");
+                        string compressionRatio_str = (double.IsNaN(PhotoProcessor.Instance.CompressionRatio) ? "Unavailable" : (PhotoProcessor.Instance.CompressionRatio).ToString("P0") ) + "                 ";
                         WriteAtCursor(comp_pct_cur, 3, progress_str);
                         WriteAtCursor(comp_items_cur, 7, (PhotoProcessor.Instance.QueueCount).ToString());
                         WriteAtCursor(comp_ratio_cur, 7, compressionRatio_str);
@@ -78,7 +80,7 @@ Scan Status:
                 }
 
             }
-            catch (Exception ex) { PsLogger.writeOutCaughtException(ex); }
+            catch (Exception ex) { PsLogger.writeOutCaughtException(ex); } //shouldn't be catching generic exception here
         }
         internal static void WriteAtCursor((int left, int top) cursor, int numChars, string msg)
         {
