@@ -1,6 +1,7 @@
 ﻿/*TODO
-if started as service, don't run ui  
-Implement service launcher
+Implement background service mode
+Add deleted file detection to filescanner
+Create external service launcher (systemd? should start background service on a schedule, unless already running)
  */
 
 using System.Linq.Expressions;

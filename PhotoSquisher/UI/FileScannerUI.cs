@@ -8,7 +8,6 @@ namespace PhotoSquisher.UI
         {
             new NumberedMenu(new[]
             {
-                new MenuItem("Scan for new photos",ScanPhotosUI),
                 new MenuItem("Scan for new photos in background",ScanPhotosBackground),
                 new MenuItem("Re-index all photos",numberedMenu_Dictionary.PlaceholderAction),
                 new MenuItem("A secret third option", numberedMenu_Dictionary.FireworksPlaceholderAction),
@@ -30,7 +29,7 @@ namespace PhotoSquisher.UI
             //Info.Run();
         }
 
-        public static void ScanPhotosUI()
+        public static void ScanPhotosUI() //defunct
         {
             //todo catch multiple instance exception
             try { new FileScanner(); }//Creates new scan queue and begins scanning

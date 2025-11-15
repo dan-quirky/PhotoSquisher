@@ -65,21 +65,27 @@ namespace PhotoSquisher.Services
         public int? QueueCount { get { return scanQueue.Count; } }
         public int? QueueCountInitial { get; } = 0;
         public int ProcessedCount { get; private set; }
-        public int FailedCount { get { return failedQueue.Count; } } 
+        public int FailedCount { get { return failedQueue.Count; } }
         public int IgnoredCount { get; private set; } = 0;
+        public int RemovedCount { get; private set; } = 0;
         public static FileScanner? Instance { get; private set; } 
         //Set this to instance in constructor, to access from elsewhere in 
         //Photoprocessor uses more standard singleton pattern, this was done fairly naively
         public FileScanner()
         {
             //TODO Break scan into chunks, it hangs for a while when starting scan while EnumerateFiles does work
-            IEnumerable<string> AllFiles = Directory.EnumerateFiles(photoLibraryDirectory, "*", SearchOption.AllDirectories);  
+            PsLogger.LogLine($"Starting scan of photo library at path: {photoLibraryDirectory}");
+            PsLogger.LogLine($"Enumerating files...");
+            IEnumerable<string> AllFiles = Directory.EnumerateFiles(photoLibraryDirectory, "*", SearchOption.AllDirectories);  //is there a way to async stream this? takes a while with a lot of files
             scanQueue = new Queue<string>(AllFiles.Count()); //Set capacity to max no.files
             using (PhotoSquisherDbContext db = new())
                 foreach (string file in AllFiles)
                     if (!Validate.PathIsIgnored(db, file))
                         scanQueue.Enqueue(file);
                     else IgnoredCount++;
+            //set all photos to missing_flag true at start of scan
+            using (PhotoSquisherDbContext db = new())
+                db.Photos.ForEachAsync(photo => photo.Missing_Flag = true).Wait(); //tolist().foreach(...) loads everything into memory, foreachasync streams 
             failedQueue = new Queue<string>();
             QueueCountInitial = QueueCount;
             if (Instance != null) { throw new Exception("Too many instances"); }
@@ -88,6 +94,7 @@ namespace PhotoSquisher.Services
         }
         public async Task Run() 
         {
+            PsLogger.LogLine($"Beginning Scan");
             await Scan();
             Instance = null; // reset instance when done
         }
@@ -99,12 +106,20 @@ namespace PhotoSquisher.Services
                 //await Task.Delay(500);
                 ProcessedCount += await ScanBatch();
             }
-            //FlagDeletedFiles
-            PsLogger.LogLine("Fails: ");
-            foreach (string fail in failedQueue) PsLogger.LogLine(fail);
-            await RescanFails();
+            if (failedQueue.Count > 0)
+            {
+                PsLogger.LogLine("Fails: ");
+                foreach (string fail in failedQueue) PsLogger.LogLine(fail);
+                PsLogger.LogLine("Attempting to rescan fails");
+                await RescanFails();
+            }
+            
+            PsLogger.LogLine($"Checking for missing files");
+            await RemoveMissing();
+
             PsLogger.LogLine();
-            PsLogger.LogLine($"Scan complete : {QueueCountInitial} files scanned {Environment.NewLine}{ProcessedCount} files added, {IgnoredCount} ignored, {FailedCount} failed.");
+            PsLogger.LogLine($"Scan complete : {QueueCountInitial} files scanned {Environment.NewLine}{ProcessedCount} files added, {IgnoredCount} ignored, {FailedCount} failed, {RemovedCount} removed.");
+            PsLogger.LogLine();
 
         }
         async Task<int> ScanBatch()
@@ -141,11 +156,11 @@ namespace PhotoSquisher.Services
                 db.Add(new Photo
                 {
                     Path = relativeFilePath,
-                    Processed_Flag = false
                 });
             }
             else
             {
+                db.Photos.Where(p => p.Path == relativeFilePath).First().Missing_Flag = false; //mark as rescanned
                 PsLogger.LogLine($"{relativeFilePath} is a duplicate, skipped.");
             }
         }
@@ -168,6 +183,38 @@ namespace PhotoSquisher.Services
                 }
 
             }
+        }
+        async Task RemoveMissing()
+        {
+            using PhotoSquisherDbContext db = new();
+            IEnumerable<Photo> missingPhotos = db.Photos.Where(p => p.Missing_Flag == false);
+            foreach (Photo photo in missingPhotos)
+            {
+                string PathAbsolute = Path.Join(photoLibraryDirectory, photo.Path);
+                string Processed_PathAbsolute = Path.Join(new outputPath().Value, photo.Processed_Path);
+                if (!File.Exists(PathAbsolute))
+                {
+                    db.Photos.Remove(photo);
+                    RemovedCount++;
+                    PsLogger.LogLine($"File missing, removed from database: {PathAbsolute} ");
+                    try
+                    {
+                        File.Delete(Processed_PathAbsolute);
+                        PsLogger.LogLine($"     Deleted compressed photo at path: {Processed_PathAbsolute}");
+                    }
+                    catch (Exception ex) when (ex is ArgumentNullException | ex is UnauthorizedAccessException | ex is DirectoryNotFoundException)
+                    {
+                        PsLogger.LogLine($"     Couldn't find a compressed photo to delete at path: {Processed_PathAbsolute}");
+                    }
+                    //catch (Exception ex) 
+                    //{
+                    //    PsDebug.printCaughtException(ex);                   
+                    //}
+
+                }
+            }
+            await db.SaveChangesAsync();
+
         }
 
     }

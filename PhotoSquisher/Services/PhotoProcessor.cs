@@ -38,9 +38,9 @@ namespace PhotoSquisher.Services
         public int ProcessedCount { get; private set; } = 0;
         public int FailedCount { get; private set; } = 0;
         public int IgnoredCount { get; private set; } = 0;
-        private int sumOutputSize = 0;
-        private int sumInputSize = 0;
-        public double CompressionRatio { get { return (double)sumOutputSize / (double)sumInputSize; } }
+        private long sumOutputSize = 0;
+        private long sumInputSize = 0;
+        public double CompressionRatio { get { return (double)sumOutputSize / ( (double)sumInputSize + 1) ; } }
 
 
         private async Task<bool> Process(int photoId)
@@ -66,8 +66,8 @@ namespace PhotoSquisher.Services
                 photo.Processed_Flag = true;
                 photo.Processed_Path = outputPathRelative;
                 await db.SaveChangesAsync();
-                sumInputSize += (int)new FileInfo(readPath).Length;
-                sumOutputSize += (int) new FileInfo(outputPath).Length;
+                sumInputSize += new FileInfo(readPath).Length;
+                sumOutputSize += new FileInfo(outputPath).Length;
                 ProcessedCount++;
                 return true;
             }
@@ -88,7 +88,6 @@ namespace PhotoSquisher.Services
             using PhotoSquisherDbContext db = new();
             //Get queue and settings from db when queue is restarted
             unprocessedPhotos = db.Photos.Where(p => p.Processed_Flag == false);
-            unprocessedPhotos = db.Photos.Where(p => true);
             if (!unprocessedPhotos.Any())
             {
                 PsLogger.LogLine("No unprocessed photos remaining");

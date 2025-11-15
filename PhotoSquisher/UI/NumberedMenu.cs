@@ -41,7 +41,7 @@ namespace PhotoSquisher.UI
             //invoke method at that index of menuItems
             try
             {
-
+                Console.Clear();
                 //Console.WriteLine($"user input: {userInput}");
                 int i = Int32.Parse(userInput.ToString()) - 1;
                 Console.WriteLine($"{menuItems[i].Message} selected");
